@@ -2,6 +2,7 @@
     "files.associations": {
         "stdio.h": "c",
         "netdb.h": "c",
-        "in.h": "c"
+        "in.h": "c",
+        "network.h": "c"
     }
 }

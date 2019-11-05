@@ -1,6 +1,11 @@
 #ifndef NETWORK_H_
 #define _NETWORK_H_
 
+ char MASTER_IP_ADDR[20];
+ char SLAVE_IP_ADDR[20];
+ char LOCAL_IP_ADDR[20];
+
+
 
 
 int connection_master();

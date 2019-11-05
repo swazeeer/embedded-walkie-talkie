@@ -15,8 +15,6 @@
 #include "network.h"
 
 
-
-
 int connection_master(){
 
     struct in_addr localInterface;
@@ -25,8 +23,12 @@ int connection_master(){
 
     char databuf[20];
     int datalen = sizeof(databuf);
+    
     get_local_ipaddress( "eth0", databuf);
-    printf("MASTER: local address is :   %s\n", databuf);
+    strncpy(LOCAL_IP_ADDR, databuf,datalen);
+
+
+    printf("MASTER: local address is :   %s\n", LOCAL_IP_ADDR);
 
     /* Create a datagram socket on which to send. */
     sd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -180,6 +182,8 @@ int connection_slave(){
     group.imr_multiaddr.s_addr = inet_addr("239.0.0.0");
     group.imr_interface.s_addr = inet_addr(local_addr);
 
+    strncpy(LOCAL_IP_ADDR, databuf,sizeof(databuf)); // slave slaves its ip address
+
 
     if(setsockopt(sd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&group, sizeof(group)) < 0){
         perror("Adding multicast group error");
@@ -200,21 +204,76 @@ int connection_slave(){
         //exit(1);
     }
     else{
+        strncpy(MASTER_IP_ADDR, databuf,datalen); // slave will receive masters ip address
         printf("Reading datagram message...OK.\n");
-        printf("The message from multicast server is: \"%s\"\n", databuf);
+        printf("slave received the (master) IP address: \"%s\"\n", MASTER_IP_ADDR);
     }
 
     return 1; // success
 }
 
 /*
-create socket
-send 
+slave will send its ip address to master 
 */
 int slave_send_ip(){
+    int fd;
+    if ( (fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
+        perror("socket failed");
+        return 1;
+    }
 
+    struct sockaddr_in serveraddr;
+    memset( &serveraddr, 0, sizeof(serveraddr) );
+    serveraddr.sin_family = AF_INET;
+    serveraddr.sin_port = htons( 12340 );         
+     
+     char local_addr[20];
+    get_local_ipaddress("eth0", local_addr); // get local address so it can be transmitted to master
+    
+    serveraddr.sin_addr.s_addr =  inet_addr(MASTER_IP_ADDR);
+
+    if (sendto( fd, local_addr, 20, 0, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0 ) {
+        perror( "sendto failed" );
+    }
+
+    close( fd );
+    return 0;
 }
 
+
+
+int master_receive_slave_ip(){
+    int fd;
+    if ( (fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
+        perror( "socket failed" );
+        return 1;
+    }
+
+    struct sockaddr_in serveraddr;
+    memset( &serveraddr, 0, sizeof(serveraddr) );
+    serveraddr.sin_family = AF_INET;
+
+    serveraddr.sin_port = htons( 12340 );
+    serveraddr.sin_addr.s_addr = htonl( INADDR_ANY );
+
+    if ( bind(fd, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0 ) {
+        perror( "bind failed" );
+        return 1;
+    }
+
+    char buffer[20];
+    int length = recvfrom( fd, buffer, sizeof(buffer) - 1, 0, NULL, 0 );
+    if ( length < 0 ) {
+        perror( "recvfrom failed" );
+    }
+
+    //buffer[length] = '\0';
+    strncpy(SLAVE_IP_ADDR, buffer,length); // master will receivce slaves ip adress
+
+
+    close( fd );
+    return 0;
+}
 
 /*
 return 0 meains failure
