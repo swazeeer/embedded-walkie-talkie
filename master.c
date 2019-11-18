@@ -18,7 +18,7 @@ int main (int argc, char *argv[ ]){
 	int rett = connection_master();
 
 	master_receive_slave_ip();
-	printf( "master has slaves ip: '%s'\n", SLAVE_IP_ADDR );
+	printf( "master has slaves ip: '%s'\n", PARTNER_ADDR );
 
 	return 0;
 }
