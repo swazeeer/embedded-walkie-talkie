@@ -204,9 +204,9 @@ int connection_slave(){
         //exit(1);
     }
     else{
-        strncpy(MASTER_IP_ADDR, databuf,datalen); // slave will receive masters ip address
+        strncpy(PARTNER_ADDR, databuf,datalen); // slave will receive masters ip address
         printf("Reading datagram message...OK.\n");
-        printf("slave received the (master) IP address: \"%s\"\n", MASTER_IP_ADDR);
+        printf("slave received the (master) IP address: \"%s\"\n", PARTNER_ADDR);
     }
 
     return 1; // success
@@ -230,7 +230,7 @@ int slave_send_ip(){
      char local_addr[20];
     get_local_ipaddress("eth0", local_addr); // get local address so it can be transmitted to master
     
-    serveraddr.sin_addr.s_addr =  inet_addr(MASTER_IP_ADDR);
+    serveraddr.sin_addr.s_addr =  inet_addr(PARTNER_ADDR);
 
     if (sendto( fd, local_addr, 20, 0, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0 ) {
         perror( "sendto failed" );
@@ -268,7 +268,7 @@ int master_receive_slave_ip(){
     }
 
     //buffer[length] = '\0';
-    strncpy(SLAVE_IP_ADDR, buffer,length); // master will receivce slaves ip adress
+    strncpy(PARTNER_ADDR, buffer,length); // master will receivce slaves ip adress
 
 
     close( fd );

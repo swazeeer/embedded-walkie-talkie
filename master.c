@@ -8,7 +8,7 @@
 
 
     
-
+//https://www.raspberrypi.org/forums/viewtopic.php?p=479174
 int main (int argc, char *argv[ ]){
 	
 	printf("master\n");

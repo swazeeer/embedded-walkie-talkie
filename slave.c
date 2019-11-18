@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 #include "network.h"
-
+//https://www.raspberrypi.org/forums/viewtopic.php?p=479174
 // slave should be started first
 int main(int argc, char *argv[]){
     printf("slave\n");
