@@ -25,15 +25,36 @@ static short buf[BUF_SIZE * NUM_CHANNELS];
 static void initInput(void);
 static void initOutput(void);
 static void playAudio(void);
- 
+ //ext4write mmc 1:1 0x82000000 /etc/systemd/system/myservice.service 0
 //arecord -d 7 -D default:AK5370 -r 44100 -f S16_LE -c 2 testRecording.wav
+/*
+‘-vn’   Disable video. 
 
-//avconv -ac 1 -f alsa -i hw:AK5370 -acodec libmp3lame -ab 32k -ac 1 -f mp3 udp://[IP ADDRESS OF AVPLAY DEVICE]:12346
-//avplay -i udp://{IP ADDRESS OF BEAGLEBONE}:12346
+‘listen’
 
+    Act as a server, listening for an incoming connection.
 
-//avconv  -f alsa -ac 1 -i hw:AK5370 -acodec mp2 -b 64k  -f rtp rtp://[IP ADDRESS OF AVPLAY DEVICE]:12346
-//sudo avplay -nodisp -i rtp://192.168.1.82:12346
+‘-nodisp’
+
+    Disable graphical display. 
+
+	‘-noautoexit’
+
+    Do not exit after playback is finished. 
+‘-exitonkeydown’
+
+    Exit if any key is pressed. 
+‘-exitonmousedown’
+
+    Exit if any mouse button is pressed. 
+‘-noautorotate’
+
+    Disable automatically rotating video based on file metadata. 
+
+*/
+//avconv  -f alsa -ac 1 -i hw:AK5370 -acodec mp2 -b 64k  -f rtp rtp://192.168.1.90:12346
+//sudo avplay -nodisp -i rtp://192.168.1.80:12346
+//>/dev/null 2>&1
 /*
 you have to start avconv first then start avplay
 is there a way to get avplay to keep listening 

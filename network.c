@@ -24,7 +24,7 @@ int connection_master(){
     char databuf[20];
     int datalen = sizeof(databuf);
     
-    get_local_ipaddress( "eth0", databuf);
+    get_local_ipaddress( "wlan0", databuf);
     strncpy(LOCAL_IP_ADDR, databuf,datalen);
 
 
@@ -50,21 +50,6 @@ int connection_master(){
     groupSock.sin_addr.s_addr = inet_addr("239.0.0.0");
     groupSock.sin_port = htons(12345);
 
-
-    /* Disable loopback so you do not receive your own datagrams.
-    {
-    char loopch = 0;
-    if(setsockopt(sd, IPPROTO_IP, IP_MULTICAST_LOOP, (char *)&loopch, sizeof(loopch)) < 0)
-    {
-    perror("Setting IP_MULTICAST_LOOP error");
-    close(sd);
-    exit(1);
-    }
-    else
-    printf("Disabling the loopback...OK.\n");
-    }
-    */
-
      
     /* Set local interface for outbound multicast datagrams. */
     /* The IP address specified must be associated with a local, */
@@ -81,7 +66,6 @@ int connection_master(){
 
     /* Send a message to the multicast group specified by the*/
     /* groupSock sockaddr structure. */
-    /*int datalen = 1024;*/
 
     if(sendto(sd, databuf, datalen, 0, (struct sockaddr*)&groupSock, sizeof(groupSock)) < 0){
         perror("Sending datagram message error");
@@ -91,21 +75,7 @@ int connection_master(){
       printf("Sending datagram message...OK\n");
 
      
-
-    /* Try the re-read from the socket if the loopback is not disable
-    if(read(sd, databuf, datalen) < 0)
-    {
-    perror("Reading datagram message error\n");
-    close(sd);
-    exit(1);
-    }
-    else
-    {
-    printf("Reading datagram message from client...OK\n");
-    printf("The message is: %s\n", databuf);
-    }
-    */
-   return 1 ; // success
+   return 1; // success
 
 }
 
@@ -174,15 +144,15 @@ int connection_slave(){
     //char* windows = "192.168.1.68";
     //char* local_addr = "00.00.00.00";
     char local_addr[20];
-    get_local_ipaddress("eth0", local_addr);
+    get_local_ipaddress("wlan0", local_addr);
     
-    printf("SLAVE: local address is :   %s\n", local_addr);
+    //printf("SLAVE: local address is :   %s\n", local_addr);
 
 
     group.imr_multiaddr.s_addr = inet_addr("239.0.0.0");
     group.imr_interface.s_addr = inet_addr(local_addr);
 
-    strncpy(LOCAL_IP_ADDR, databuf,sizeof(databuf)); // slave slaves its ip address
+    strncpy(LOCAL_IP_ADDR, local_addr,sizeof(local_addr)); // slave slaves its ip address
 
 
     if(setsockopt(sd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&group, sizeof(group)) < 0){
@@ -205,7 +175,6 @@ int connection_slave(){
     }
     else{
         strncpy(PARTNER_ADDR, databuf,datalen); // slave will receive masters ip address
-        printf("Reading datagram message...OK.\n");
         printf("slave received the (master) IP address: \"%s\"\n", PARTNER_ADDR);
     }
 
@@ -228,7 +197,7 @@ int slave_send_ip(){
     serveraddr.sin_port = htons( 12340 );         
      
      char local_addr[20];
-    get_local_ipaddress("eth0", local_addr); // get local address so it can be transmitted to master
+    get_local_ipaddress("wlan0", local_addr); // get local address so it can be transmitted to master
     
     serveraddr.sin_addr.s_addr =  inet_addr(PARTNER_ADDR);
 
@@ -305,10 +274,6 @@ void get_local_ipaddress(char* interface_name, char* IP_address){
                 printf("getnameinfo() failed: %s\n", gai_strerror(s));
                 exit(EXIT_FAILURE);
             }
-            printf("\tInterface : <%s>\n",ifa->ifa_name );
-            printf("\t IP Address : <%s>\n", IP_address); 
-           // sprintf(IP_address, host); // return address
-           // *IP_address = &host;
         }
     }
 
