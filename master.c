@@ -19,13 +19,11 @@ void* run_avplay();
 int main (int argc, char *argv[ ]){
 	
 	printf("master\n");
-	printf("master\n");
-	printf("master\n");
 
 	int rett = connection_master();
 
 	master_receive_slave_ip();
-	printf( "master has slaves ip: '%s'\n", PARTNER_ADDR );
+	//printf( "master has slaves ip: '%s'\n", PARTNER_ADDR );
 
 
     pthread_create(&avplay_thrd, 0, &run_avplay,0);

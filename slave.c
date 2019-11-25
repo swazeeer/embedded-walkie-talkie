@@ -19,18 +19,16 @@ void* run_avplay();
 int main(int argc, char *argv[]){
     
     printf("slave\n");
-    printf("slave\n");
-    printf("slave\n");
     int rett = connection_slave();
 
     slave_send_ip();
     printf( "slave has masters ip: '%s'\n", PARTNER_ADDR );
 
    
-    //strncpy(        PARTNER_ADDR , "192.75.241.139",20);
+    //strncpy(  PARTNER_ADDR , "192.75.241.139",20);
 
     pthread_create(&avplay_thrd, 0, &run_avplay,0);
-    struct timespec sleep = {1, 0}; //1 s,,,
+    struct timespec sleep = {1, 0}; //1 s
     nanosleep(&sleep, (struct timespec *) 0);  
     pthread_create(&avconv_thrd, 0, &run_avconv,0);
     

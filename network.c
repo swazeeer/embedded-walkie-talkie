@@ -1,3 +1,4 @@
+// code used from online guides and modified as needed
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -5,7 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <netdb.h>
-
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
@@ -39,11 +39,6 @@ int connection_master(){
     }
     else
       printf("Opening the datagram socket...OK.\n");
-
-     
-
-    /* Initialize the group sockaddr structure with a */
-    /* group address of 225.1.1.1 and port 5555. */
 
     memset((char *) &groupSock, 0, sizeof(groupSock));
     groupSock.sin_family = AF_INET;
@@ -121,7 +116,7 @@ int connection_slave(){
     memset((char *) &localSock, 0, sizeof(localSock));
     localSock.sin_family = AF_INET;
     localSock.sin_port = htons(12345);
-    localSock.sin_addr.s_addr = INADDR_ANY; // SHOULDnt be binding ot all interfaces
+    localSock.sin_addr.s_addr = INADDR_ANY; // shouldnt be binding to all interfaces
     // might cause problems on the beagle bone           //https://stackoverflow.com/questions/16508685/understanding-inaddr-any-for-socket-programming?noredirect=1&lq=1
 
     if(bind(sd, (struct sockaddr*)&localSock, sizeof(localSock))){
@@ -142,11 +137,10 @@ int connection_slave(){
 
     //char* ubuntu = "192.168.1.75";
     //char* windows = "192.168.1.68";
-    //char* local_addr = "00.00.00.00";
     char local_addr[20];
     get_local_ipaddress("wlan0", local_addr);
     
-    //printf("SLAVE: local address is :   %s\n", local_addr);
+    printf("SLAVE: local address is :   %s\n", local_addr);
 
 
     group.imr_multiaddr.s_addr = inet_addr("239.0.0.0");
@@ -175,7 +169,7 @@ int connection_slave(){
     }
     else{
         strncpy(PARTNER_ADDR, databuf,datalen); // slave will receive masters ip address
-        printf("slave received the (master) IP address: \"%s\"\n", PARTNER_ADDR);
+        printf("slave received (master) IP address: \"%s\"\n", PARTNER_ADDR);
     }
 
     return 1; // success
@@ -210,7 +204,8 @@ int slave_send_ip(){
 }
 
 
-
+// master will open a socket and wait for slave to send a message
+// this message will contain slaves IP address
 int master_receive_slave_ip(){
     int fd;
     if ( (fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
@@ -245,8 +240,7 @@ int master_receive_slave_ip(){
 }
 
 /*
-return 0 meains failure
-return 1 means success
+gets the local address
 */
 void get_local_ipaddress(char* interface_name, char* IP_address){
     struct ifaddrs *ifaddr, *ifa;
@@ -258,7 +252,6 @@ void get_local_ipaddress(char* interface_name, char* IP_address){
         perror("getifaddrs");
         exit(EXIT_FAILURE);
     }
-
 
     for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
         if (ifa->ifa_addr == NULL)
