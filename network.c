@@ -140,7 +140,7 @@ int connection_slave(){
     char local_addr[20];
     get_local_ipaddress("wlan0", local_addr);
     
-    printf("SLAVE: local address is :   %s\n", local_addr);
+  //  printf("SLAVE: local address is :   %s\n", local_addr);
 
 
     group.imr_multiaddr.s_addr = inet_addr("239.0.0.0");
