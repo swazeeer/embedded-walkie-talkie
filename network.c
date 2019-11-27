@@ -259,7 +259,7 @@ void get_local_ipaddress(char* interface_name, char* IP_address){
 
         s = getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in) ,IP_address, max_address_lenth, NULL, 0, NI_NUMERICHOST);
 
-        if( (strcmp(ifa->ifa_name,"wifi0") == 0 ) && 
+        if( (strcmp(ifa->ifa_name,"wlan0") == 0 ) && 
             (ifa->ifa_addr->sa_family      == AF_INET) ){
 
             if (s != 0){
